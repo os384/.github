@@ -1,6 +1,4 @@
 <div align="center">
-  <img src="os384-logo.svg" width="108" height="108" alt="os384" />
-
   <h1>os384</h1>
 
   <p><strong>Sovereign computing for the open web.</strong></p>

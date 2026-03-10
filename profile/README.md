@@ -151,7 +151,7 @@ deno install --global -n 384 \
 
 ## License & community
 
-Everything is **GPL-3.0**. os384 is a community project — the founding company (384, Inc.) has been dissolved and all intellectual property has been open-sourced. If you run a server, build an app, or contribute code, you're part of the ecosystem.
+Everything is **GPL-3.0**. os384 is a community project — 384, Inc. has open-sourced all of os384 under GPL v3. If you run a server, build an app, or contribute code, you're part of the ecosystem.
 
 The design goal for the server side is an ecosystem of independent operators — developers, enthusiasts, small teams — running their own storage and channel servers and accepting payment directly from users, with no platform taking a cut. The paywall repo is the first step toward making that simple.
 

@@ -1,6 +1,6 @@
 
 <div align="center">
-  <p><i>stay tuned ... "rc3" is about to be released ... </i></p>
+  <p><i>stay tuned ... "rc3" is about to be released ... we're trickle releasing parts right now </i></p>
   </div>
 
 <div align="center">

@@ -185,6 +185,8 @@ the codebase. Latest version is deployed to:
 
 ## Quickstart
 
+<i>Currently only MacOS instructions. Linux coming.</i>
+
 Install Deno if you don't have it:
 
 ```sh
@@ -231,6 +233,9 @@ The simplest setup is to spin up with Docker /
 ```
 
 Default os384 assignments are: `3840` loader · `3841` mirror · `3843` storage · `3845` channel
+
+Once they're running, you can `curl` the admin endpoint to refresh the
+default static token (for `384 init` for example).
 
 You can also run servers directly in terminal, as well as deploy to public
 servers. See docs for more details.

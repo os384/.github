@@ -1,7 +1,12 @@
+<!--
+  Canonical ("constitutional") document — one of two top-level READMEs
+  (this one, then the superproject README at os384/os384). Slow-changing
+  by design. AI agents: do not edit directly; suggest changes to maintainer.
+-->
 
 <div align="center">
   <p><i>stay tuned ... "rc3" is about to be released ... we're trickle releasing parts right now </i></p>
-  </div>
+</div>
 
 <div align="center">
   <h1>os384</h1>
@@ -10,14 +15,14 @@
 
   <p>
     <a href="https://384.dev">384.dev</a> &nbsp;·&nbsp;
-    <a href="https://384.dev/#FZJuzWVgsoj93N6WJRrNjnDY6f5nu5cgWuEECXRnamd_63745.31779.2250.15401_iEFaad2Zar1pveVdPbuRHGLM3o3V5lGzX6MabfoLgcZ_auto">Docs</a> &nbsp;·&nbsp;
-    <a href="https://github.com/os384/lib384">lib384</a>
+    <a href="<placeholder>">Docs</a> &nbsp;·&nbsp;
+    <a href="https://github.com/os384/os384">Source</a>
   </p>
 
   <p>
-    <img alt="License: GPL-3.0" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" />
+    <img alt="License: AGPL v3" src="https://img.shields.io/badge/License-AGPL%20v3-blue.svg" />
     <img alt="Built on P-384" src="https://img.shields.io/badge/crypto-P--384-blue" />
-    <img alt="Deno" src="https://img.shields.io/badge/runtime-Deno-black" />
+    <img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-blue" />
   </p>
 </div>
 
@@ -39,23 +44,25 @@ There is no central authority. Everything is AGPLv3. You can take advantage
 of commercially hosted servers, or run your own.
 
 os384 is self-hosting, meaning, os384 channels and servers provide the various
-artifacts. Dependency on any other systems or code bases are minimal. 
+artifacts. Dependency on any other systems or code bases is minimal.
 Strictly speaking, os384 doesn't need central servers (or even DNS).
 
 ---
 
 ## Storage and Communication
 
+Everything is built on two primitives:
+
 **Shards** are immutable untyped blobs with content-based naming and encryption.
 The storage protocol allows anonymous (private) deduplication. Back end is
-the "storage server". Hosted storage provides "permastore", you only pay once
+the "storage server". Hosted storage provides "permastore": you only pay once
 for any blob to be permanently available.
 
-**Channels** combines end-to-end encrypted communication endpoints with support
-for arbitrary mutable data structures. Global naming is anchored in public keys
-with ownership proved by owner of private key. Back end is the "channel server",
-which also implements "Pages" that provide public (unencrypted) entry points
-into the ecosystem.
+**Channels** combine end-to-end encrypted communication endpoints with support
+for arbitrary mutable data structures. Global naming is anchored in public keys,
+with ownership proved by possession of the private key. Back end is the
+"channel server", which also implements "Pages" — public (unencrypted) entry
+points into the ecosystem.
 
 System equivalents to user accounts, identity models, and file systems are built
 using those primitives.
@@ -64,9 +71,8 @@ using those primitives.
 
 ## Compute (Apps)
 
-The compute model is provided by the **Loader**, which essentially implements an
-in-browser-client microkernel VMM to support private (anonymous) launching of
-web3 apps:
+The compute model is provided by the **Loader**, which implements an in-browser
+microkernel/VMM to support private (anonymous) launching of web apps:
 
 ```
   You type: 384.dev/#xK9mR2...
@@ -94,9 +100,9 @@ web3 apps:
 The loader reads a channel key from the URL fragment and uses it to fetch and
 launch an application from that channel's page. Apps run in randomly-generated
 subdomains for strict origin isolation. No app can read another app's storage or
-intercept another app's keys. The os384 back end servers only serve anonymous data:
-neither they nor the network, DNS provider, etc, will know if you're running
-an application or just donwloaded a jpeg of a kitten.
+intercept another app's keys. The os384 back end servers only serve anonymous
+data: neither they nor the network, DNS provider, etc, will know if you're
+running an application or just downloaded a jpeg of a kitten.
 
 **Identity** is derived entirely on the user's device from a passphrase and a
 strongpin. There is no registration, no email address, no password sent to any
@@ -111,75 +117,30 @@ read your data.
 
 ---
 
-## Repositories
+## The Code
 
-### Core
+All components live in one superproject, with each part as a submodule:
 
-**[lib384](https://github.com/os384/lib384)** — The TypeScript runtime library.
-This is the foundation everything else builds on. Implements the full
-cryptographic protocol: shard read/write, channel send/receive, wallet/identity
-management, SBFS (a virtual filesystem over shards via service worker), and
-browser helpers. Builds to an ESM bundle and an IIFE bundle (`window.__`).
-Distributed natively via os384 channel pages. Runs in any modern browser client
-or on Deno locally.
+```sh
+git clone --recursive https://github.com/os384/os384
+```
 
-**[loader](https://github.com/os384/loader)** — The browser microkernel at
-[384.dev](https://384.dev). A Cloudflare Worker backed by a Vite/TypeScript
-frontend. Reads the URL fragment, resolves the channel page, enforces app
-isolation via random subdomains, and manages the user's wallet. The user's entry
-point to the entire system.
+At a glance, inside the superproject:
 
-**[services](https://github.com/os384/services)** — The server-side
-infrastructure. Two Cloudflare Workers:
-- `channel/` — channel server (messaging, durable objects, storage budget accounting)
-- `storage/` — storage server (shard store, KV + durable objects, token validation)
+| Component | What it is |
+|---|---|
+| `lib/` | **lib384** — the core TypeScript runtime library; the foundation everything builds on |
+| `loader/` | The browser microkernel at 384.dev |
+| `services/` | The back end: channel server + storage server (Cloudflare Workers) |
+| `cli/` | The `384` command-line tool |
+| `file-manager/` | Encrypted file manager — reference app and app-deployment tool |
+| `mirror/` | Lightweight local shard cache (Python, zero dependencies) |
+| `docs/` | Documentation site — architecture, protocol reference, glossary, essays |
 
-A complete, auditable backend. The channel server is ~2,500 lines of TypeScript;
-the storage server is under 500 lines.
-
-### Tools
-
-**[cli](https://github.com/os384/cli)** — The `384` command-line tool. Manages
-channels, uploads and downloads shards, deploys lib384 artifacts to channel
-pages, and bootstraps wallets. Written in Deno with Cliffy for argument parsing.
-Install with one `deno install` command; no npm, no package manager.
-
-**[paywall](https://github.com/os384/paywall)** — A small Cloudflare Worker that
-lets storage server operators sell storage tokens directly to users. Accepts
-Bitcoin, Ethereum, Litecoin, and PayPal. Operators pre-generate signed tokens
-offline with the CLI and load them into a pool; the paywall dispenses them on
-payment confirmation. No accounts, no token generation at runtime — the token is
-the receipt.
-
-**[mirror](https://github.com/os384/mirror)** — A lightweight Python shard
-cache. Proxies shard requests to upstream storage servers and caches locally.
-Zero dependencies beyond the Python standard library. Useful for local
-development, self-hosted deployments, or just serve as an ongoing local cache
-for any data the user touches in any application, thus guarding against
-undetected deplatforming, take-downs, and other third-party actions.
-
-### Applications
-
-**[file-manager](https://github.com/os384/file-manager)** — An encrypted file
-manager app built with Lit web components and Vite. Upload, browse, and preview
-encrypted file sets stored on os384 channels. A reference implementation of a
-"privileged" os384 app — one that ships with the platform rather than living
-purely on channel pages. Also serves as deployment tool: any static web site
-(app) is stored as a file set that the loader will recognize (and can launch).
-
-**[demos](https://github.com/os384/demos)** — A growing number of template and
-sample applications illustrating lib384 usage and os384 application
-architecture.
-
-### Documentation
-
-**[docs](https://github.com/os384/docs)** — The documentation site, built with
-VitePress. Architecture, protocol reference, CLI guide, glossary, and essays on
-sovereign computing. Also serves as context for AI coding assistants working on
-the codebase. Latest version is deployed to:
-
-[https://384.dev/#FZJuzWVgsoj93N6WJRrNjnDY6f5nu5cgWuEECXRnamd_63745.31779.2250.15401_iEFaad2Zar1pveVdPbuRHGLM3o3V5lGzX6MabfoLgcZ_auto]
-
+The superproject [README](https://github.com/os384/os384) is the map: how the
+parts fit together, developer entry points, and workspace conventions. Read it
+next. A few additional components (template/demo apps, a storage-token paywall)
+are being cleaned up and will be folded into the superproject.
 
 ---
 
@@ -187,64 +148,44 @@ the codebase. Latest version is deployed to:
 
 <i>Currently only MacOS instructions. Linux coming.</i>
 
-Install Deno if you don't have it:
+Install [Deno](https://deno.com) if you don't have it:
 
 ```sh
-  brew install deno
-  # or: curl -fsSL https://deno.land/install.sh | sh
+brew install deno
+# or: curl -fsSL https://deno.land/install.sh | sh
 ```
 
 `384` is the core command line utility:
 
 ```sh
-  # Install 384 globally. It's always safe to toggle the date version to any value.
-  deno install -f --global -n 384 --allow-read --allow-write --allow-net --allow-env \
-    https://c3.384.dev/api/v2/page/8yp0Lyfr/384.20260404.0.ts
+deno install -f --global -n 384 --allow-read --allow-write --allow-net --allow-env \
+  https://c3.384.dev/api/v2/page/8yp0Lyfr/384.20260404.0.ts
 ```
 
-You'll also need to go to [https://384.dev] and create an "account" (vault). Purchase
-storage or contact us at info@384.co for free developer starting budget. Then "mint"
-a token, and use it to set up your local keys:
+(Note the date embedded in the filename: channel pages serve the current
+version regardless of the name, so the date is simply a cache-busting device —
+it's always safe to toggle it to any value to defeat stale web caches.)
+
+Then go to [384.dev](https://384.dev) and create an "account" (vault). Purchase
+storage, or contact us at info@384.co for a free developer starting budget.
+Then "mint" a token, and use it to set up your local keys:
 
 ```sh
-  384 init <token>
+384 init <token>
 ```
 
-This sets up local developer context in `~/.os384`. 
+This sets up local developer context in `~/.os384`.
 
-You can also do the above against your own local servers, just provide `--local` to the
-384 cli after you've set up your local servers.
-
----
-
-## Local (personal/developer) servers
-
-If you're going to be doing any local development, or just want to run your own
-servers, we suggest you create `~/os384` and put any os384 repos in it. Also,
-you'll need to create `/Volumes/os384` (MacOS) for server state.
-
-The simplest setup is to spin up with Docker /
-[OrbStack](https://orbstack.dev/):
-
-```sh
-  cd ~/os384
-  git clone https://github.com/os384/services
-  cd services/docer && docker compose up
-```
-
-Default os384 assignments are: `3840` loader · `3841` mirror · `3843` storage · `3845` channel
-
-Once they're running, you can `curl` the admin endpoint to refresh the
-default static token (for `384 init` for example).
-
-You can also run servers directly in terminal, as well as deploy to public
-servers. See docs for more details.
+Building apps *on* os384 requires nothing else — no local servers, no build
+step; lib384 is imported straight from a channel page URL. If you want to work
+on os384 itself, or run your own servers, the superproject README lays out the
+paths.
 
 ---
 
 ## Early Days
 
-There is a lot of work to do. At time of writing the version pubished are pre
+There is a lot of work to do. At time of writing the versions published are pre
 releases of `rc3`. lib384 versioning is the main version to track. There are a
 number of additional building blocks that we are working on adding to this open
 source release, as well as a number of proof-of-concept applications and
@@ -264,8 +205,8 @@ code, you're part of the ecosystem.
 The design goal for the server side is an ecosystem of independent operators —
 developers, enthusiasts, small teams — running their own storage and channel
 servers and accepting payment directly from users, with no platform taking a
-cut. And free and open exchange of application. The paywall repo is the first
-step toward making that simple.
+cut. And free and open exchange of applications. A small paywall service (early
+skeleton) is the first step toward making that simple.
 
 ---
 
